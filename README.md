@@ -2,7 +2,7 @@
 This is a comprehensive command-line parking management system built in C++. It effectively simulates a real-world parking facility, handling vehicle check-ins, check-outs, and dynamic billing. The project is designed with a strong emphasis on Object-Oriented Programming (OOP), using inheritance and polymorphism to manage different vehicle types and customer tiers.
 
 # ✨ Key Features
-##Dynamic Billing System:
+## Dynamic Billing System:
 
 Calculates parking fees based on the duration of the stay.
 
@@ -75,9 +75,7 @@ Choose Option 2 to retrieve a vehicle and generate its bill. You will be asked i
 Admin functions (Options 3, 4, 5) are password-protected.
 
 ### View Database: galahad
-
 ### Erase Database: lancelot
-
 ### Update VIP List: merlin
 
 
