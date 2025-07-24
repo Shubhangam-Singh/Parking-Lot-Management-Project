@@ -43,9 +43,9 @@ C++: The core programming language for the application logic.
 
 <fstream> for file handling (CSV database).
 
-<vector>, <string>, <sstream> for data manipulation.
+< vector >, < string >, < sstream > for data manipulation.
 
-<time.h> for calculating parking duration.
+< time.h > for calculating parking duration.
 
 
 # 🚀 How to Compile and Run
