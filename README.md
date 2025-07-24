@@ -39,9 +39,9 @@ C++: The core programming language for the application logic.
 
 ## Standard Libraries:
 
-<iostream> for console input/output.
+< iostream > for console input/output.
 
-<fstream> for file handling (CSV database).
+< fstream > for file handling (CSV database).
 
 < vector >, < string >, < sstream > for data manipulation.
 
