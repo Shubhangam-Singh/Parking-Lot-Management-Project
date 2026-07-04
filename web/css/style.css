@@ -1,4 +1,4 @@
-/* ===================== ParkEase — Arcade Terminal ===================== */
+/* ===================== Park Easy — Arcade Terminal ===================== */
 
 :root{
   --neon-cyan:#4cf3ff;
@@ -167,6 +167,21 @@ body{
   height:min(78vh, 760px);
 }
 
+.screen::before{
+  content:'';
+  position:absolute; inset:0;
+  background:#fff;
+  z-index:20;
+  pointer-events:none;
+  animation:powerOn .7s ease-out forwards;
+}
+@keyframes powerOn{
+  0%{ opacity:.95; }
+  35%{ opacity:.1; }
+  50%{ opacity:.55; }
+  100%{ opacity:0; }
+}
+
 .bezel-controls{
   display:flex;
   align-items:center;
@@ -251,6 +266,8 @@ body{
 }
 
 .garage-col{
+  position:relative;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
   gap:.35rem;
@@ -258,6 +275,29 @@ body{
   border:1px solid rgba(76,243,255,.15);
   border-radius:8px;
   padding:.45rem;
+}
+
+.garage-vehicle{
+  position:absolute;
+  top:50%;
+  left:0;
+  font-size:1.3rem;
+  transform:translateY(-50%);
+  pointer-events:none;
+  filter:drop-shadow(0 0 6px var(--neon-cyan));
+  z-index:4;
+}
+.garage-vehicle.drive-in{ animation:driveIn .85s cubic-bezier(.3,.7,.3,1) forwards; }
+.garage-vehicle.drive-out{ animation:driveOut .85s cubic-bezier(.5,0,.75,.4) forwards; }
+@keyframes driveIn{
+  0%{ left:-10%; opacity:0; transform:translateY(-50%) scaleX(1); }
+  12%{ opacity:1; }
+  92%{ opacity:1; }
+  100%{ left:88%; opacity:0; transform:translateY(-50%) scaleX(1); }
+}
+@keyframes driveOut{
+  0%{ left:10%; opacity:1; transform:translateY(-50%) scaleX(-1); }
+  100%{ left:104%; opacity:0; transform:translateY(-50%) scaleX(-1); }
 }
 
 .garage-head{
@@ -289,11 +329,20 @@ body{
   box-shadow:0 0 6px var(--neon-magenta);
 }
 .slot-cell.pop{
-  animation:slotPop .4s ease-out;
+  animation:slotPop .45s ease-out;
 }
 @keyframes slotPop{
   0%{ transform:scale(1.9); box-shadow:0 0 16px var(--neon-magenta),0 0 30px var(--neon-magenta); }
   100%{ transform:scale(1); }
+}
+
+.slot-cell.vacate{
+  animation:slotVacate .5s ease-out;
+}
+@keyframes slotVacate{
+  0%{ background:var(--neon-magenta); border-color:var(--neon-magenta); box-shadow:0 0 6px var(--neon-magenta); transform:scale(1); }
+  35%{ background:var(--neon-green); border-color:var(--neon-green); box-shadow:0 0 14px var(--neon-green); transform:scale(1.25); }
+  100%{ background:rgba(76,243,255,.08); border-color:rgba(76,243,255,.2); box-shadow:none; transform:scale(1); }
 }
 
 .garage-count{
@@ -424,11 +473,12 @@ body{
   padding:.6rem .7rem .8rem;
   box-shadow:0 10px 24px rgba(0,0,0,.5);
   clip-path:inset(0 0 100% 0);
-  transform:translateY(-6px);
+  transform:translateY(-6px) rotate(-2deg);
+  transform-origin:top center;
   border-radius:0 0 4px 4px;
-  transition:clip-path .9s cubic-bezier(.2,.8,.2,1);
+  transition:clip-path .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.34,1.56,.64,1);
 }
-.receipt.printing{ clip-path:inset(0 0 0% 0); }
+.receipt.printing{ clip-path:inset(0 0 0% 0); transform:translateY(0) rotate(0deg); }
 .receipt-title{ text-align:center; font-weight:700; margin-bottom:.3rem; }
 .receipt-total{ font-weight:700; margin-top:.2rem; }
 .receipt-line.small{ font-size:.58rem; opacity:.7; margin-top:.3rem; text-align:center; }
@@ -454,11 +504,11 @@ body{
   border-radius:10px;
   padding:.6rem .9rem;
   color:#fff;
-  transform:translateX(120%);
+  transform:translateX(120%) scale(.8) rotate(6deg);
   opacity:0;
-  transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .45s;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .4s;
 }
-.toast.show{ transform:translateX(0); opacity:1; }
+.toast.show{ transform:translateX(0) scale(1) rotate(0deg); opacity:1; }
 .toast-icon{ font-size:1.5rem; }
 .toast-title{ font-size:.62rem; letter-spacing:.1em; color:var(--neon-amber); }
 .toast-name{ font-size:.85rem; font-weight:700; }

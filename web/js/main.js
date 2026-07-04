@@ -103,9 +103,16 @@ function isPlateValid(plate) {
   return true;
 }
 
+function catKeyFor(wheels, type) {
+  if (wheels === 1 && type === 1) return '2e';
+  if (wheels === 1 && type === 2) return '2p';
+  if (wheels === 2 && type === 1) return '4e';
+  return '4p';
+}
+
 async function bootSequence() {
   const lines = [
-    'BOOTING PARKEASE OS v3.0.0 ...',
+    'BOOTING PARK EASY OS v3.0.0 ...',
     'MOUNTING localStorage:// as /database.csv',
     'MOUNTING localStorage:// as /viplist.txt',
     'CALIBRATING GARAGE SENSORS ...',
@@ -239,6 +246,7 @@ async function caseParkVehicle() {
     term.println(`|  Vehicle parked successfully at time:      |  ${ctimeStr(entry_time)}`);
     term.println('|____________________________________________|_____________________________|');
     Sound.success();
+    Garage.driveIn(catKeyFor(wheels, type), wheels);
     Garage.render(lot);
 
     Stats.data.totalParked++;
@@ -260,14 +268,22 @@ async function caseRetrieveVehicle() {
   term.printBox(RETRIEVE_BOX, 'box');
   const plate2 = (await term.ask('Number plate:')).trim();
 
-  const customer = new Customer(0, 0, 0, plate2, 0);
-  const numberPlateFromCSV = lot.retrieveVehicleByPlate(plate2);
+  const record = lot.retrieveRecordByPlate(plate2);
 
-  if (!numberPlateFromCSV) {
+  if (!record) {
     term.println('Vehicle not found.', 'err');
     Sound.error();
     return;
   }
+
+  const parsedEntryTime = Date.parse(record.entryTimeStr);
+  const customer = new Customer(
+    record.wheels,
+    record.type,
+    record.floor,
+    plate2,
+    Number.isNaN(parsedEntryTime) ? 0 : parsedEntryTime
+  );
 
   term.println('Vehicle successfully identified.');
   const finalVipCheck = await callIfVIP();
@@ -287,6 +303,7 @@ async function caseRetrieveVehicle() {
   lot.retrieveVehicleByPlate(plate2);
   lot.removeVehicleData(plate2);
   lot.releaseSlot(customer.getWheels(), customer.getType());
+  Garage.driveOut(catKeyFor(customer.getWheels(), customer.getType()), customer.getWheels());
   Garage.render(lot);
 
   printReceipt(document.getElementById('receiptDock'), {

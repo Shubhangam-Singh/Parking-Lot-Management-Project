@@ -1,5 +1,5 @@
 /*
- * ParkEase engine — a direct JavaScript port of the classes and logic in
+ * Park Easy engine — a direct JavaScript port of the classes and logic in
  * "Parking-Lot-Management (Park Easy).cpp" (Vehicle, Customer, ParkingLot,
  * plus the file-backed database/viplist). Nothing about the original
  * behaviour, math, or bugs has been changed — only the storage medium
@@ -154,6 +154,28 @@ class ParkingLot {
       }
     }
     return numberPlate;
+  }
+
+  // Reads back the full parked record (wheels/type/floor/entry time) for a
+  // plate. The web edition uses this on exit so the correct garage slot is
+  // freed and the bill reflects the actual parking duration — the original
+  // C++ case 2 handler never re-reads these fields from the CSV row, which
+  // is why releaseSlot() and calculateBill() end up operating on defaults.
+  retrieveRecordByPlate(plate) {
+    const lines = Store.loadDB();
+    for (const line of lines) {
+      if (line.includes(plate)) {
+        const [wheels, type, floor, plateField, ...rest] = this.splitLine(line, ',');
+        return {
+          wheels: parseInt(wheels, 10),
+          type: parseInt(type, 10),
+          floor: parseInt(floor, 10),
+          plate: plateField,
+          entryTimeStr: rest.join(','),
+        };
+      }
+    }
+    return null;
   }
 
   hasAvailableSlot(wheels, type) {

@@ -1,7 +1,7 @@
 /*
  * Presentation layer: terminal I/O, sound, the garage slot visualizer,
  * the receipt printer animation, HUD/stats and achievement toasts.
- * None of this touches the ParkEase engine logic in engine.js — it only
+ * None of this touches the Park Easy engine logic in engine.js — it only
  * renders it.
  */
 
@@ -190,14 +190,39 @@ const Garage = {
       [...grid.children].forEach((cell, i) => {
         const shouldFill = i < occupied;
         const wasFilled = cell.classList.contains('filled');
-        cell.classList.toggle('filled', shouldFill);
         if (shouldFill && !wasFilled) {
-          cell.classList.add('pop');
-          setTimeout(() => cell.classList.remove('pop'), 400);
+          cell.classList.add('filled', 'pop');
+          setTimeout(() => cell.classList.remove('pop'), 450);
+        } else if (!shouldFill && wasFilled) {
+          cell.classList.remove('filled');
+          cell.classList.add('vacate');
+          setTimeout(() => cell.classList.remove('vacate'), 500);
         }
       });
       this.container.querySelector(`[data-count="${key}"]`).textContent = `${occupied} / ${total}`;
     });
+  },
+
+  vehicleGlyph(wheels) {
+    return wheels === 1 ? '🏍️' : '🚗';
+  },
+
+  driveIn(catKey, wheels) {
+    const col = this.cells[catKey].closest('.garage-col');
+    const el = document.createElement('div');
+    el.className = 'garage-vehicle drive-in';
+    el.textContent = this.vehicleGlyph(wheels);
+    col.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  },
+
+  driveOut(catKey, wheels) {
+    const col = this.cells[catKey].closest('.garage-col');
+    const el = document.createElement('div');
+    el.className = 'garage-vehicle drive-out';
+    el.textContent = this.vehicleGlyph(wheels);
+    col.appendChild(el);
+    setTimeout(() => el.remove(), 900);
   },
 };
 
@@ -207,7 +232,7 @@ function printReceipt(dockEl, { plate, hours, minutes, vipType, bill }) {
   const paper = document.createElement('div');
   paper.className = 'receipt';
   paper.innerHTML = `
-    <div class="receipt-title">*** PARK EASE ***</div>
+    <div class="receipt-title">*** PARK EASY ***</div>
     <div class="receipt-line">Plate: ${plate}</div>
     <div class="receipt-line">Duration: ${hours}h ${minutes}m</div>
     <div class="receipt-line">VIP Tier: ${vipType === 'no' ? '—' : vipType.toUpperCase()}</div>
@@ -231,7 +256,7 @@ const BADGES = {
   ten_parked: { name: 'Regular', icon: '🏅', desc: 'Parked 10 vehicles lifetime' },
   full_house: { name: 'Full House', icon: '🅿️', desc: 'Filled every slot in a category' },
   database_wipe: { name: 'Clean Slate', icon: '🧹', desc: 'Erased the database' },
-  night_owl: { name: 'Night Owl', icon: '🦉', desc: 'Used ParkEase after midnight' },
+  night_owl: { name: 'Night Owl', icon: '🦉', desc: 'Used Park Easy after midnight' },
 };
 
 const Stats = {
