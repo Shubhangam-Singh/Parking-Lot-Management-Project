@@ -1,10 +1,11 @@
 /*
- * Menu loop — a straight port of main()'s switch/case in
+ * Menu loop — a port of main()'s switch/case in
  * "Parking-Lot-Management (Park Easy).cpp". Same six options, same
- * prompts, same validation rules, same admin codenames (galahad /
- * lancelot / merlin), same billing formulas. This file only decides
- * *how* to ask/print (via Terminal) and layers gamification (XP,
- * badges, garage animation, receipts) on top of the unchanged logic.
+ * prompts/validation rules, same admin codenames (galahad / lancelot /
+ * merlin). This file decides *how* to ask/print (via Terminal) and
+ * layers gamification (XP, badges, garage animation, receipts) on top
+ * of the engine — see the top of engine.js for the specific bugs
+ * (billing math, VIP self-reporting, stale exit data) fixed here.
  */
 
 const BANNER = [
@@ -157,28 +158,19 @@ async function callIfVIP() {
     const answer = (await term.ask('Are you a VIP? (yes/no):')).trim();
     if (answer === 'yes') {
       const uid = (await term.ask('Please enter your UID:')).trim();
-      const id = retrieveUID(uid);
-      if (!id) {
+      const tier = retrieveVipTier(uid);
+      if (!tier) {
         term.println(
           "Sorry, but we can't find your ID in our database, you can take our vip subscription if you like our services"
         );
         Sound.error();
-        break;
       } else {
-        term.println('Enter VIP type (silver/gold/platinum):');
-        term.println(
-          'Please enter type according to your membership only otherwise your membership can be cancelled (Non-refundable)'
-        );
-        const type = (await term.ask('VIP type:')).trim();
-        if (['silver', 'gold', 'platinum'].includes(type)) {
-          vipType = type;
-          Stats.unlock('vip_verified');
-          Sound.success();
-          break;
-        } else {
-          term.println("Error: Invalid VIP type. Please enter 'silver', 'gold', or 'platinum'.", 'err');
-        }
+        vipType = tier;
+        term.println(`Welcome back! Verified ${tier.toUpperCase()} member — your discount has been applied.`);
+        Stats.unlock('vip_verified');
+        Sound.success();
       }
+      break;
     } else if (answer === 'no') {
       term.println(
         'I hope you liked our services, you can get our membership to avail amazing discounts and exciting offers'
@@ -300,7 +292,6 @@ async function caseRetrieveVehicle() {
 
   const bill = finalVipCheck === 'no' ? detail.bill : customer.calculateBillVip(exit_time, finalVipCheck);
 
-  lot.retrieveVehicleByPlate(plate2);
   lot.removeVehicleData(plate2);
   lot.releaseSlot(customer.getWheels(), customer.getType());
   Garage.driveOut(catKeyFor(customer.getWheels(), customer.getType()), customer.getWheels());
@@ -378,13 +369,22 @@ async function caseUpdateUidList() {
     return;
   }
   Stats.unlock('admin_access');
-  const n = await term.askInt("How many UID's you want to store:");
-  const vip = Store.loadVip();
-  for (let x = 1; x <= n; x++) {
-    const uid = (await term.ask('enter uid:')).trim();
-    vip.push(uid);
+  const n = await term.askInt("How many UID's you want to register:");
+  if (!n || n <= 0) {
+    term.println('Error: Please enter a positive number.', 'err');
+    return;
   }
-  Store.saveVip(vip);
+  for (let x = 1; x <= n; x++) {
+    const uid = (await term.ask(`Enter UID #${x}:`)).trim();
+    let tier;
+    while (true) {
+      tier = (await term.ask('Enter VIP tier for this UID (silver/gold/platinum):')).trim();
+      if (['silver', 'gold', 'platinum'].includes(tier)) break;
+      term.println("Error: Invalid VIP type. Please enter 'silver', 'gold', or 'platinum'.", 'err');
+    }
+    addVipMember(uid, tier);
+    term.println(`Registered UID ${uid} as ${tier.toUpperCase()} member.`);
+  }
   Sound.success();
 }
 
