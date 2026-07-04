@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ParkEase — Arcade Terminal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%85%BF%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="synthwave-bg">
+  <div class="stars"></div>
+  <div class="sun"></div>
+  <div class="grid-floor"></div>
+</div>
+
+<div class="cabinet">
+  <div class="marquee">
+    <span class="marquee-title">PARK EASE</span>
+    <span class="marquee-sub">ARCADE TERMINAL &middot; MODEL PL-3000</span>
+  </div>
+
+  <div class="bezel">
+    <div class="screen" id="screen">
+
+      <div class="hud">
+        <div class="hud-item">
+          <span class="hud-label">LVL</span>
+          <span class="hud-value" id="hudLevel">1</span>
+        </div>
+        <div class="hud-item xp-wrap">
+          <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">REVENUE</span>
+          <span class="hud-value">Rs. <span id="hudRevenue">0</span></span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">PARKED</span>
+          <span class="hud-value" id="hudParked">0</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">🏆</span>
+          <span class="hud-value" id="hudBadges">0/8</span>
+        </div>
+        <button class="mute-btn" id="muteBtn" title="Toggle sound">🔊</button>
+      </div>
+
+      <div class="garage" id="garage"></div>
+
+      <div class="crt">
+        <div class="terminal">
+          <div class="scrollback" id="scrollback"></div>
+          <div class="inputline">
+            <span class="prompt-label" id="promptLabel">C:\PARKEASE&gt;</span>
+            <input id="cmdInput" autocomplete="off" spellcheck="false" autofocus />
+          </div>
+        </div>
+        <div class="scanlines"></div>
+        <div class="flicker"></div>
+        <div class="vignette"></div>
+      </div>
+
+      <div class="receipt-dock" id="receiptDock"></div>
+    </div>
+
+    <div class="bezel-controls">
+      <span class="led"></span>
+      <span class="bezel-text">POWER</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/engine.js"></script>
+<script src="js/terminal.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

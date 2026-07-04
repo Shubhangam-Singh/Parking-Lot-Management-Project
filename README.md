@@ -1,6 +1,9 @@
 # Parking Management System 🚗
 This is a comprehensive command-line parking management system built in C++. It effectively simulates a real-world parking facility, handling vehicle check-ins, check-outs, and dynamic billing. The project is designed with a strong emphasis on Object-Oriented Programming (OOP), using inheritance and polymorphism to manage different vehicle types and customer tiers.
 
+## 🕹️ Web Edition
+[`web/`](web/) contains a gamified, animated browser front end (retro synthwave arcade terminal, live slot visualizer, XP/achievements, sound effects) built on top of a JavaScript port of the exact same `Vehicle` / `Customer` / `ParkingLot` logic from the `.cpp` file, using `localStorage` in place of `database.csv` / `viplist.txt`. Open `web/index.html` in a browser (or serve the folder statically) to play.
+
 # ✨ Key Features
 ## Dynamic Billing System:
 
